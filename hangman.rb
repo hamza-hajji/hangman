@@ -9,7 +9,7 @@ words = File.read("5desk.txt").split("\n")
 # only when the length is 5-12 select the word
 $fewer_words = words.select { |word| word.length.between? 5, 12 }
 $random_word = $fewer_words.sample
-$result = "_" * ($random_word.length - 1)
+$unders = "_" * ($random_word.length - 1)
 
 # helper method: replaces all indices in str with str2
 def my_replace str, str2, idxs
@@ -27,11 +27,13 @@ def get_idx str, search
   indices
 end
 
-
 def display_welcome
   puts "Welcome to Hangman!"
-  puts $random_word
-  puts $result
+  # adding hints
+  change_unders($random_word.split("").sample)
+  change_unders($random_word.split("").sample)
+  change_unders($random_word.split("").sample)
+  puts $unders
   puts "You have #{$rem_guesses} remaining guesses"
 end
 
@@ -44,11 +46,11 @@ def get_input
   return guess
 end
 
-def change_result input
+def change_unders input
   unless $guesses.include? input
     if $random_word.index(input) != nil
       $guesses << input
-      $result = my_replace $result, input, get_idx($random_word, input)
+      $unders = my_replace $unders, input, get_idx($random_word, input)
     else
       $rem_guesses -= 1
     end
@@ -57,7 +59,7 @@ def change_result input
   end
 
   if $rem_guesses <= 0
-    puts "You're out of guesses!"
+    puts "You're out of guesses! The word was #{$random_word}"
     exit
   end
 end
@@ -66,11 +68,11 @@ display_welcome
 
 while true
   user_input = get_input
-  change_result(user_input)
+  change_unders(user_input)
 
-  puts $result
-  # if $result contains no underscores you win
-  if $result.index("_") == nil
+  puts $unders
+  # if $unders contains no underscores you win
+  if $unders.index("_") == nil
     puts "You won!"
     break
   end
