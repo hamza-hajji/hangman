@@ -1,4 +1,5 @@
 $rem_guesses = 6
+$guesses = []
 
 # load the dictionarry and pick a random 5-12 word
 
@@ -31,6 +32,7 @@ def display_welcome
   puts "Welcome to Hangman!"
   puts $random_word
   puts $result
+  puts "You have #{$rem_guesses} remaining guesses"
 end
 
 def get_input
@@ -43,11 +45,21 @@ def get_input
 end
 
 def change_result input
-  $result = my_replace $result, input, get_idx($random_word, input)
-end
+  unless $guesses.include? input
+    if $random_word.index(input) != nil
+      $guesses << input
+      $result = my_replace $result, input, get_idx($random_word, input)
+    else
+      $rem_guesses -= 1
+    end
+  else
+    puts "You already entered this"
+  end
 
-def game_over
-  puts "\nGame Over!"
+  if $rem_guesses <= 0
+    puts "You're out of guesses!"
+    exit
+  end
 end
 
 display_welcome
@@ -56,12 +68,11 @@ while true
   user_input = get_input
   change_result(user_input)
 
-  $rem_guesses -= 1
-
   puts $result
-  if $rem_guesses <= 0
-    puts "You're out of guesses"
-    exit
+  # if $result contains no underscores you win
+  if $result.index("_") == nil
+    puts "You won!"
+    break
   end
   puts "You have #{$rem_guesses} remaining guesses"
 end
