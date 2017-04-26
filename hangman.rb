@@ -7,11 +7,30 @@ words = File.read("5desk.txt").split("\n")
 
 # only when the length is 5-12 select the word
 $fewer_words = words.select { |word| word.length.between? 5, 12 }
+$random_word = $fewer_words.sample
+$result = "_" * ($random_word.length - 1)
+
+# helper method: replaces all indices in str with str2
+def my_replace str, str2, idxs
+  idxs.each do |idx|
+    str[idx] = str2
+  end
+  return str
+end
+# helper method: get all indices from a string
+def get_idx str, search
+  indices = []
+  str.split("").each_with_index do |char, i|
+    indices << i if char == search
+  end
+  indices
+end
+
 
 def display_welcome
-  random_word = $fewer_words.sample
   puts "Welcome to Hangman!"
-  puts "You have #{$rem_guesses} guesses:\nThe word is: #{random_word}"
+  puts $random_word
+  puts $result
 end
 
 def get_input
@@ -20,7 +39,29 @@ def get_input
     guess = gets.chomp[0] # only select a letter
     break if guess.index(/[a-zA-Z]/) != nil
   end
+  return guess
+end
+
+def change_result input
+  $result = my_replace $result, input, get_idx($random_word, input)
+end
+
+def game_over
+  puts "\nGame Over!"
 end
 
 display_welcome
-get_input
+
+while true
+  user_input = get_input
+  change_result(user_input)
+
+  $rem_guesses -= 1
+
+  puts $result
+  if $rem_guesses <= 0
+    puts "You're out of guesses"
+    exit
+  end
+  puts "You have #{$rem_guesses} remaining guesses"
+end
