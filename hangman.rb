@@ -40,17 +40,18 @@ end
 def get_input
   while true
     print "Your guess(only a letter): "
-    guess = gets.chomp[0] # only select a letter
+    guess = gets.chomp[0].downcase # only select a letter
     break if guess.index(/[a-zA-Z]/) != nil
   end
   return guess
 end
 
 def change_unders input
+  copy = $random_word.downcase
   unless $guesses.include? input
-    if $random_word.index(input) != nil
+    if copy.index(input) != nil
       $guesses << input
-      $unders = my_replace $unders, input, get_idx($random_word, input)
+      $unders = my_replace $unders, input, get_idx(copy, input)
     else
       $rem_guesses -= 1
     end
